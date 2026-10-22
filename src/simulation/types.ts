@@ -165,6 +165,8 @@ export interface SurvivalResult {
   wins: number;
   losses: number;
   pushes: number;
+  winStreak: number;
+  lossStreak: number;
   net: number;
   busted: boolean;
   chartDecisions: number;

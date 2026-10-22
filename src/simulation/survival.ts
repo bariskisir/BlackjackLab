@@ -316,10 +316,14 @@ export function runSurvival(request: SurvivalRequest): SurvivalResult {
   let wins = 0;
   let losses = 0;
   let pushes = 0;
+  let winStreak = 0;
+  let lossStreak = 0;
+  let currentWinStreak = 0;
+  let currentLossStreak = 0;
   let chartDecisions = 0;
   let fallbackDecisions = 0;
   let insuranceNet = 0;
-  let nextBet = baseBet;
+  let lossToRecover = 0;
 
   while (true) {
     if (bettingSystem === "martingale") {
@@ -328,10 +332,9 @@ export function runSurvival(request: SurvivalRequest): SurvivalResult {
       break;
     }
 
-    // Martingale doubles the stake after each loss. When the bankroll cannot
-    // cover the next stake, push the whole remaining balance in instead.
+    const martingaleBet = lossToRecover > 0 ? lossToRecover + baseBet : baseBet;
     const bet =
-      bettingSystem === "martingale" ? Math.min(nextBet, bankroll) : baseBet;
+      bettingSystem === "martingale" ? Math.min(martingaleBet, bankroll) : baseBet;
     lastBet = bet;
 
     const round = playFixedStrategyRound(actionOrder, bankroll, request.rules, bet);
@@ -368,16 +371,28 @@ export function runSurvival(request: SurvivalRequest): SurvivalResult {
     }
 
     const outcome = roundOutcome(round.net);
-    if (outcome === "win") wins += 1;
-    else if (outcome === "loss") losses += 1;
-    else pushes += 1;
+    if (outcome === "win") {
+      wins += 1;
+      currentWinStreak += 1;
+      currentLossStreak = 0;
+      if (currentWinStreak > winStreak) winStreak = currentWinStreak;
+    } else if (outcome === "loss") {
+      losses += 1;
+      currentLossStreak += 1;
+      currentWinStreak = 0;
+      if (currentLossStreak > lossStreak) lossStreak = currentLossStreak;
+    } else {
+      pushes += 1;
+      currentWinStreak = 0;
+      currentLossStreak = 0;
+    }
 
     if (bettingSystem === "martingale") {
-      if (outcome === "loss") nextBet = bet * 2;
-      else if (outcome === "win") nextBet = baseBet;
-      // A push repeats the same stake, so the progression is not reset.
-    } else {
-      nextBet = baseBet;
+      if (round.net < 0) {
+        lossToRecover += -round.net;
+      } else if (round.net > 0) {
+        lossToRecover = Math.max(0, lossToRecover - round.net);
+      }
     }
   }
 
@@ -402,6 +417,8 @@ export function runSurvival(request: SurvivalRequest): SurvivalResult {
     wins,
     losses,
     pushes,
+    winStreak,
+    lossStreak,
     net: bankroll - startingBankroll,
     busted,
     chartDecisions,

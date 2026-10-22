@@ -88,6 +88,14 @@ function SurvivalResultView({ result }: { result: SurvivalResult }) {
           <span>ROUNDS DRAW</span>
           <strong>{formatNumber(result.pushes)}</strong>
         </div>
+        <div>
+          <span>WIN STREAK</span>
+          <strong>{formatNumber(result.winStreak)}</strong>
+        </div>
+        <div>
+          <span>LOSS STREAK</span>
+          <strong>{formatNumber(result.lossStreak)}</strong>
+        </div>
       </div>
 
       <BankrollChart key={result.completedAt} result={result} />
