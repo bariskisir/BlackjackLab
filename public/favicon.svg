@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 76" role="img" aria-label="Blackjack Lab">
+  <defs>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff9e9" />
+      <stop offset="1" stop-color="#e7dcc5" />
+    </linearGradient>
+  </defs>
+  <g transform="rotate(-4 29 35)">
+    <rect x="5" y="5" width="54" height="66" rx="8" fill="#000000" opacity="0.18" />
+    <rect x="2" y="2" width="54" height="66" rx="8" fill="url(#card)" />
+    <rect x="6" y="6" width="46" height="58" rx="4" fill="none" stroke="#142219" stroke-opacity="0.14" />
+    <text x="10" y="22" font-family="'DM Mono', ui-monospace, monospace" font-size="12" font-weight="500" fill="#142219">A</text>
+    <path d="M29 25C26 30 16 35 16 44c0 5 5 8 9 4 0 5-3 10-7 12h22c-4-2-7-7-7-12 4 4 9 1 9-4 0-9-10-14-13-19Z" fill="#142219" />
+  </g>
+</svg>

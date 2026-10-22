@@ -1,0 +1,3 @@
+export const PROGRESS_INTERVAL_MS = 1000;
+export const PROGRESS_COALESCE_MS = 250;
+export const PROGRESS_ROUND_STEP = 262144;

@@ -1,0 +1,296 @@
+.run-panel {
+  position: relative;
+  padding: 25px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(216, 255, 102, 0.075), transparent 38%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.018), transparent 40%),
+    var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: 21px;
+  box-shadow: var(--shadow-large);
+  animation: riseIn 0.65s 0.08s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.run-panel::before {
+  position: absolute;
+  top: 0;
+  left: 18%;
+  width: 64%;
+  height: 1px;
+  content: "";
+  background: linear-gradient(90deg, transparent, rgba(216, 255, 102, 0.55), transparent);
+}
+
+.run-panel.is-running {
+  border-color: rgba(216, 255, 102, 0.23);
+}
+
+.run-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 23px;
+}
+
+.run-state {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  color: var(--muted-dim);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.run-state i {
+  width: 5px;
+  height: 5px;
+  background: currentColor;
+  border-radius: 50%;
+}
+
+.run-state--running {
+  color: var(--lime);
+}
+
+.run-state--done {
+  color: var(--win);
+}
+
+.run-state--error {
+  color: var(--loss);
+}
+
+.round-label {
+  display: block;
+  margin-bottom: 9px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.round-field {
+  display: flex;
+  align-items: center;
+  height: 75px;
+  padding: 0 18px;
+  background: #07120d;
+  border: 1px solid var(--panel-line);
+  border-radius: 13px;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.round-field:focus-within {
+  border-color: rgba(216, 255, 102, 0.6);
+  box-shadow: 0 0 0 3px rgba(216, 255, 102, 0.08);
+}
+
+.round-field.has-error {
+  border-color: var(--loss);
+}
+
+.round-field input {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font-family: var(--font-mono);
+  font-size: 38px;
+  font-weight: 500;
+  letter-spacing: -0.05em;
+}
+
+.round-field input:disabled {
+  color: var(--muted);
+}
+
+.round-field > span {
+  padding-left: 12px;
+  color: var(--muted-dim);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+}
+
+.preset-row {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.preset-row button {
+  height: 33px;
+  padding: 0;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--panel-line);
+  border-radius: 7px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  transition:
+    color 140ms ease,
+    background 140ms ease,
+    border-color 140ms ease;
+}
+
+.preset-row button:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--panel-line-strong);
+}
+
+.preset-row button.is-active {
+  color: #0a140e;
+  background: rgba(216, 255, 102, 0.88);
+  border-color: transparent;
+}
+
+.preset-row button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.run-button {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 51px;
+  margin-top: 16px;
+  overflow: hidden;
+  color: #0a140e;
+  background: var(--lime);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.015em;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.run-button-progress {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  appearance: none;
+  background: transparent;
+  border: 0;
+}
+
+.run-button-progress::-webkit-progress-bar {
+  background: transparent;
+}
+
+.run-button-progress::-webkit-progress-value {
+  background: linear-gradient(90deg, rgba(216, 255, 102, 0.3), rgba(216, 255, 102, 0.13));
+  transition: width 120ms linear;
+}
+
+.run-button-progress::-moz-progress-bar {
+  background: linear-gradient(90deg, rgba(216, 255, 102, 0.3), rgba(216, 255, 102, 0.13));
+  transition: width 120ms linear;
+}
+
+.run-button:hover:not(:disabled) {
+  background: #e2ff87;
+  box-shadow: 0 12px 32px rgba(195, 236, 88, 0.16);
+  transform: translateY(-1px);
+}
+
+.run-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.run-button:disabled {
+  color: #22301e;
+  background: #bfd965;
+  cursor: wait;
+}
+
+.run-panel.is-running .run-button {
+  color: var(--text);
+  background: rgba(255, 154, 132, 0.08);
+  border-color: rgba(255, 154, 132, 0.32);
+}
+
+.run-panel.is-running .run-button:hover {
+  background: rgba(255, 154, 132, 0.14);
+  box-shadow: 0 12px 32px rgba(255, 154, 132, 0.08);
+}
+
+.run-panel.is-running .run-button svg {
+  color: var(--loss);
+}
+
+.run-button svg {
+  position: relative;
+  z-index: 1;
+  width: 17px;
+  height: 17px;
+  fill: currentColor;
+}
+
+.run-button > span {
+  position: relative;
+  z-index: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.run-error {
+  margin: 10px 0 0;
+  color: var(--loss);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+@media (max-width: 1080px) {
+  .run-panel {
+    width: min(100%, 540px);
+  }
+}
+
+@media (max-width: 620px) {
+  .run-panel {
+    padding: 20px;
+    border-radius: 18px;
+  }
+
+  .run-panel-head {
+    margin-bottom: 19px;
+  }
+
+  .round-field {
+    height: 66px;
+    padding: 0 14px;
+  }
+
+  .round-field input {
+    font-size: 34px;
+  }
+
+  .preset-row button {
+    height: 32px;
+    font-size: 11.5px;
+  }
+
+  .run-button {
+    height: 49px;
+    font-size: 11.5px;
+  }
+}

@@ -1,0 +1,110 @@
+.bankroll-chart {
+  width: 100%;
+  margin-top: 18px;
+  padding: 8px;
+  background: rgba(4, 11, 7, 0.28);
+  border: 1px solid rgba(233, 196, 106, 0.1);
+  border-radius: 12px;
+}
+
+.bankroll-chart-stage {
+  position: relative;
+}
+
+.bankroll-chart-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  cursor: crosshair;
+}
+
+.bankroll-chart-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bankroll-grid {
+  stroke: rgba(238, 234, 217, 0.075);
+  stroke-width: 1;
+  stroke-dasharray: 3 6;
+}
+
+.bankroll-start-line {
+  stroke: rgba(233, 196, 106, 0.26);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+}
+
+.bankroll-area {
+  fill: url(#bankroll-fill);
+}
+
+.bankroll-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bankroll-dot {
+  fill: #0d1b14;
+  stroke: rgba(233, 196, 106, 0.7);
+  stroke-width: 1.5;
+}
+
+.bankroll-peak-dot {
+  fill: var(--accent);
+  stroke: #0d1b14;
+  stroke-width: 1.5;
+}
+
+.bankroll-final-dot {
+  fill: #f4e0a5;
+  stroke: rgba(233, 196, 106, 0.45);
+  stroke-width: 3;
+}
+
+.bankroll-crosshair {
+  stroke: rgba(244, 224, 165, 0.4);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+.bankroll-hover-dot {
+  fill: var(--accent);
+  stroke: #0d1b14;
+  stroke-width: 2;
+}
+
+.bankroll-tooltip {
+  fill: rgba(4, 11, 7, 0.96);
+  stroke: rgba(233, 196, 106, 0.45);
+  stroke-width: 1;
+}
+
+.bankroll-tooltip-round {
+  fill: rgba(238, 234, 217, 0.78);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.bankroll-tooltip-value {
+  fill: #f4e0a5;
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 620px) {
+  .bankroll-chart {
+    margin-top: 14px;
+    padding: 6px;
+  }
+}
