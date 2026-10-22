@@ -21,22 +21,22 @@ export function CellDetails({ row, dealer, cell, compact = false, onClose }: Cel
   const leader = getCellLeader(cell, row, 1);
   const totalTrials = actions.reduce((total, action) => total + cell[action].trials, 0);
   const dealerLabel = dealer === 11 ? "A" : String(dealer);
+  const sampledActions = actions.filter((action) => cell[action].trials > 0);
 
   return (
     <div className={`cell-details${compact ? " is-compact" : ""}`}>
       <div className="cell-details-head">
-        <div className="cell-hand">
-          <span className="cell-eyebrow">{HAND_KIND_LABELS[row.kind]}</span>
-          <div className="cell-hand-line">
-            <strong>{row.label}</strong>
-            <span className="cell-vs">vs</span>
-            <span className="cell-dealer-token">{dealerLabel}</span>
-          </div>
-        </div>
-        <div className="cell-head-side">
-          <span>DEALER</span>
-          <strong>{dealerLabel}</strong>
-        </div>
+        <span className="cell-kind">
+          <span>{HAND_KIND_LABELS[row.kind]}</span>
+          {totalTrials > 0 && (
+            <>
+              <span className="cell-kind-sep" aria-hidden="true">
+                ·
+              </span>
+              <span>{totalTrials === 1 ? "1 action" : `${totalTrials} actions`}</span>
+            </>
+          )}
+        </span>
         {onClose && (
           <button className="cell-close" onClick={onClose} type="button" aria-label="Close details">
             ×
@@ -44,65 +44,49 @@ export function CellDetails({ row, dealer, cell, compact = false, onClose }: Cel
         )}
       </div>
 
-      <div className="cell-meta-line">
-        <span>{rowDescription(row)}</span>
-        <span>{totalTrials > 0 ? `${totalTrials} actions observed` : "No observations yet"}</span>
+      <div className="cell-hand-line">
+        <strong>{row.label}</strong>
+        <span className="cell-vs">vs</span>
+        <span className="cell-dealer-token">{dealerLabel}</span>
       </div>
 
-      <div className="action-comparison">
-        {actions.map((action) => {
-          const stats = cell[action];
-          const winRate = getWinRate(stats);
-          const meanNet = getMeanNet(stats);
-          const isLeader = leader?.action === action && stats.trials > 0;
-          const hasSample = stats.trials > 0;
+      {sampledActions.length > 0 ? (
+        <div className="action-comparison">
+          {sampledActions.map((action) => {
+            const stats = cell[action];
+            const winRate = getWinRate(stats);
+            const meanNet = getMeanNet(stats);
+            const isLeader = leader?.action === action;
 
-          return (
-            <div className={`action-stat${isLeader ? " is-leader" : ""}`} key={action}>
-              <div className="action-stat-head">
+            return (
+              <div
+                className={`action-stat${isLeader ? " is-leader" : ""}`}
+                key={action}
+                title={isLeader ? "Best action" : undefined}
+              >
                 <span className={`action-token action-token--${action}`}>
                   {ACTION_META[action].short}
                 </span>
                 <span className="action-stat-name">{ACTION_META[action].label}</span>
-                {isLeader && <span className="best-tag">Best</span>}
-                <span className="action-stat-count">
-                  {hasSample ? `${stats.trials} times` : "—"}
+                <span className="action-stat-count" title="Actions observed">
+                  {stats.trials}
                 </span>
-                <strong className="action-stat-rate">
-                  {hasSample ? formatPercent(winRate) : "—"}
+                <strong className="action-stat-rate" title="Win rate">
+                  {formatPercent(winRate)}
                 </strong>
-              </div>
-              <div className="action-rate-track" aria-hidden="true">
-                <progress
-                  className={`action-rate action-rate--${action}`}
-                  max={100}
-                  value={hasSample ? winRate * 100 : 0}
-                />
-              </div>
-              <div className="action-stat-sub">
-                <span>
-                  {hasSample
-                    ? `${stats.wins}W · ${stats.losses}L · ${stats.pushes}P`
-                    : "Not tried in this cell"}
-                </span>
-                <span className={meanNet < 0 ? "is-negative" : "is-positive"}>
-                  {hasSample ? `${formatSigned(meanNet)} net` : "—"}
+                <span
+                  className={`action-stat-net ${meanNet < 0 ? "is-negative" : "is-positive"}`}
+                  title="Average net"
+                >
+                  {formatSigned(meanNet)}
                 </span>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="cell-empty">No observations yet</p>
+      )}
     </div>
   );
-}
-
-function rowDescription(row: ChartRow): string {
-  if (row.kind === "pair") return `${row.label} pair`;
-  if (row.kind === "soft") return `Soft hand · ${row.label}`;
-  return row.id === "hard-17"
-    ? "Hard 17 or higher"
-    : row.id === "hard-8"
-      ? "Hard 8 or lower"
-      : `Hard ${row.label}`;
 }

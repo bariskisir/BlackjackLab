@@ -452,13 +452,6 @@
   stroke-linecap: round;
 }
 
-.survival-hint {
-  margin: 13px 0 0;
-  color: var(--muted-dim);
-  font-size: 11px;
-  line-height: 1.6;
-}
-
 .survival-output {
   min-width: 0;
 }
@@ -698,10 +691,6 @@
 .side-rail .survival-select select {
   height: 40px;
   font-size: 10px;
-}
-
-.side-rail .survival-hint {
-  font-size: 10.5px;
 }
 
 .side-rail .survival-empty {

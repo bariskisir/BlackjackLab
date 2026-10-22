@@ -333,14 +333,6 @@ export function SurvivalMode({
               ▾
             </span>
           </div>
-          {bettingSystem === "martingale" && (
-            <p className="survival-hint">
-              Martingale: the bet doubles after each loss (1× → 2× → 4× → 8×…) and
-              resets on a win; a push repeats the bet. If the bankroll cannot cover
-              the next stake, the whole balance is wagered.
-            </p>
-          )}
-
           <button
             className={`survival-run-button${isRunning ? " is-running" : ""}`}
             type="button"

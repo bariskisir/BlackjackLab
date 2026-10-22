@@ -293,7 +293,6 @@ export function StrategyChart({ stats, hasResult }: StrategyChartProps) {
               aria-modal="true"
               aria-label={`${sheetRow.label} cell details`}
             >
-              <div className="cell-sheet-grabber" aria-hidden="true" />
               <CellDetails
                 row={sheetRow}
                 dealer={sheet.dealer}

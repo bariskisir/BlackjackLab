@@ -21,6 +21,9 @@ export const CHART_ROWS: ChartRow[] = [
   { id: "hard-10", label: "10", kind: "hard" },
   { id: "hard-9", label: "9", kind: "hard" },
   { id: "hard-8", label: "8", kind: "hard" },
+  { id: "hard-7", label: "7", kind: "hard" },
+  { id: "hard-6", label: "6", kind: "hard" },
+  { id: "hard-5", label: "5", kind: "hard" },
   { id: "soft-20", label: "A,9", kind: "soft" },
   { id: "soft-19", label: "A,8", kind: "soft" },
   { id: "soft-18", label: "A,7", kind: "soft" },
@@ -30,6 +33,8 @@ export const CHART_ROWS: ChartRow[] = [
   { id: "soft-14", label: "A,3", kind: "soft" },
   { id: "soft-13", label: "A,2", kind: "soft" },
   { id: "pair-11", label: "A,A", kind: "pair" },
+  { id: "pair-10", label: "10,10", kind: "pair" },
+  { id: "pair-9", label: "9,9", kind: "pair" },
   { id: "pair-8", label: "8,8", kind: "pair" },
   { id: "pair-7", label: "7,7", kind: "pair" },
   { id: "pair-6", label: "6,6", kind: "pair" },
@@ -37,7 +42,6 @@ export const CHART_ROWS: ChartRow[] = [
   { id: "pair-4", label: "4,4", kind: "pair" },
   { id: "pair-3", label: "3,3", kind: "pair" },
   { id: "pair-2", label: "2,2", kind: "pair" },
-  { id: "pair-10", label: "10,10", kind: "pair" },
 ];
 
 export const CHART_ROW_MAP = new Map(CHART_ROWS.map((row) => [row.id, row]));
@@ -152,6 +156,10 @@ export function getChartRow(cards: Card[], canSplit: boolean): ChartRow | null {
   }
 
   if (value.soft) {
+    // A,A is handled by the pair row; soft 12 has no separate chart row.
+    if (isPair(cards) && cards[0].rank === "A") {
+      return CHART_ROW_MAP.get("pair-11") ?? null;
+    }
     const softTotal = Math.min(20, Math.max(13, value.total));
     return CHART_ROW_MAP.get(`soft-${softTotal}`) ?? null;
   }
@@ -160,11 +168,12 @@ export function getChartRow(cards: Card[], canSplit: boolean): ChartRow | null {
     return CHART_ROW_MAP.get("hard-17") ?? null;
   }
 
-  if (value.total >= 8) {
-    return CHART_ROW_MAP.get(`hard-${value.total}`) ?? null;
+  // Hard 4 can only be 2,2 when splitting is unavailable; keep it in the pair row.
+  if (value.total === 4 && isPair(cards)) {
+    return CHART_ROW_MAP.get("pair-2") ?? null;
   }
 
-  return CHART_ROW_MAP.get("hard-8") ?? null;
+  return CHART_ROW_MAP.get(`hard-${value.total}`) ?? null;
 }
 
 export function getWinRate(stats: ActionStats): number {
