@@ -16,6 +16,7 @@ import {
 import { PROGRESS_INTERVAL_MS, PROGRESS_ROUND_STEP } from "./progress";
 import type { ActionOrderMap } from "./chart";
 import type {
+  BettingSystem,
   Card,
   ChartAction,
   ChartStats,
@@ -298,15 +299,19 @@ export function evaluateStrategy(
 
 export function runSurvival(request: SurvivalRequest): SurvivalResult {
   const startedAt = performance.now();
+  const bettingSystem: BettingSystem =
+    request.bettingSystem === "martingale" ? "martingale" : "normal";
   const baseBet = Math.max(MIN_BET, Math.floor(request.baseBet));
   const startingBankroll = Math.max(baseBet, request.startingBankroll);
   const actionOrder = buildActionOrder(request.stats);
-  const timeline: SurvivalPoint[] = [{ round: 0, bankroll: startingBankroll }];
+  const timeline: SurvivalPoint[] = [{ round: 0, bankroll: startingBankroll, bet: 0 }];
   let timelineStride = 1;
   let nextTimelineRound = 1;
   let bankroll = startingBankroll;
   let peakBankroll = startingBankroll;
   let peakRound = 0;
+  let peakBet = 0;
+  let lastBet = 0;
   let roundsSurvived = 0;
   let wins = 0;
   let losses = 0;
@@ -314,10 +319,22 @@ export function runSurvival(request: SurvivalRequest): SurvivalResult {
   let chartDecisions = 0;
   let fallbackDecisions = 0;
   let insuranceNet = 0;
-  let busted = false;
+  let nextBet = baseBet;
 
-  while (bankroll >= baseBet) {
-    const round = playFixedStrategyRound(actionOrder, bankroll, request.rules, baseBet);
+  while (true) {
+    if (bettingSystem === "martingale") {
+      if (bankroll < MIN_BET) break;
+    } else if (bankroll < baseBet) {
+      break;
+    }
+
+    // Martingale doubles the stake after each loss. When the bankroll cannot
+    // cover the next stake, push the whole remaining balance in instead.
+    const bet =
+      bettingSystem === "martingale" ? Math.min(nextBet, bankroll) : baseBet;
+    lastBet = bet;
+
+    const round = playFixedStrategyRound(actionOrder, bankroll, request.rules, bet);
     bankroll += round.net;
     roundsSurvived += 1;
     chartDecisions += round.chartDecisions;
@@ -327,10 +344,11 @@ export function runSurvival(request: SurvivalRequest): SurvivalResult {
     if (bankroll > peakBankroll) {
       peakBankroll = bankroll;
       peakRound = roundsSurvived;
+      peakBet = bet;
     }
 
     if (roundsSurvived >= nextTimelineRound) {
-      timeline.push({ round: roundsSurvived, bankroll });
+      timeline.push({ round: roundsSurvived, bankroll, bet });
 
       if (timeline.length >= MAX_TIMELINE_POINTS) {
         const reduced: SurvivalPoint[] = [];
@@ -354,17 +372,24 @@ export function runSurvival(request: SurvivalRequest): SurvivalResult {
     else if (outcome === "loss") losses += 1;
     else pushes += 1;
 
-    if (bankroll < baseBet) {
-      busted = true;
+    if (bettingSystem === "martingale") {
+      if (outcome === "loss") nextBet = bet * 2;
+      else if (outcome === "win") nextBet = baseBet;
+      // A push repeats the same stake, so the progression is not reset.
+    } else {
+      nextBet = baseBet;
     }
   }
 
+  const busted =
+    bettingSystem === "martingale" ? bankroll < MIN_BET : bankroll < baseBet;
+
   if (timeline[timeline.length - 1]?.round !== roundsSurvived) {
-    timeline.push({ round: roundsSurvived, bankroll });
+    timeline.push({ round: roundsSurvived, bankroll, bet: lastBet });
   }
 
   if (peakRound > 0 && !timeline.some((point) => point.round === peakRound)) {
-    timeline.push({ round: peakRound, bankroll: peakBankroll });
+    timeline.push({ round: peakRound, bankroll: peakBankroll, bet: peakBet });
     timeline.sort((a, b) => a.round - b.round);
   }
 

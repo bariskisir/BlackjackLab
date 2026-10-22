@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type {
+  BettingSystem,
   SavedStrategy,
   SurvivalRequest,
   SurvivalResult,
@@ -28,7 +29,12 @@ export function useSurvivalRunner() {
   }, []);
 
   const run = useCallback(
-    (strategy: SavedStrategy, startingBankroll: number, baseBet: number) => {
+    (
+      strategy: SavedStrategy,
+      startingBankroll: number,
+      baseBet: number,
+      bettingSystem: BettingSystem,
+    ) => {
       stopWorker();
       setState({ status: "running", result: null, error: null });
 
@@ -64,6 +70,7 @@ export function useSurvivalRunner() {
         rules: strategy.rules,
         startingBankroll,
         baseBet,
+        bettingSystem,
       };
       worker.postMessage(request);
     },

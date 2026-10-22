@@ -22,6 +22,7 @@ export type GameOutcome = "win" | "loss" | "push";
 export type DealerUpCard = 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
 export type DoubleRule = "any" | "9-11" | "10-11";
 export type InsurancePolicy = "off" | "always";
+export type BettingSystem = "normal" | "martingale";
 
 export interface GameRules {
   blackjackPayout: number;
@@ -146,11 +147,13 @@ export interface SurvivalRequest {
   rules: GameRules;
   startingBankroll: number;
   baseBet: number;
+  bettingSystem: BettingSystem;
 }
 
 export interface SurvivalPoint {
   round: number;
   bankroll: number;
+  bet: number;
 }
 
 export interface SurvivalResult {

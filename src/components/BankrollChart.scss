@@ -102,6 +102,13 @@
   font-variant-numeric: tabular-nums;
 }
 
+.bankroll-tooltip-bet {
+  fill: rgba(238, 234, 217, 0.62);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
 @media (max-width: 620px) {
   .bankroll-chart {
     margin-top: 14px;

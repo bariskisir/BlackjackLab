@@ -8,7 +8,7 @@ const WIDTH = 660;
 const HEIGHT = 320;
 const PADDING = { top: 12, right: 12, bottom: 12, left: 12 };
 const TOOLTIP_WIDTH = 176;
-const TOOLTIP_HEIGHT = 56;
+const TOOLTIP_HEIGHT = 78;
 const TOOLTIP_GAP = 14;
 
 interface BankrollPoint {
@@ -16,6 +16,7 @@ interface BankrollPoint {
   y: number;
   round: number;
   bankroll: number;
+  bet: number;
 }
 
 interface HoverPoint {
@@ -29,6 +30,7 @@ interface HoverPoint {
   chartHeight: number;
   round: number;
   bankroll: number;
+  bet: number;
 }
 
 interface BankrollChartProps {
@@ -58,6 +60,15 @@ function bankrollAtRound(points: BankrollPoint[], round: number): number {
   const span = right.round - left.round;
   const progress = span === 0 ? 0 : (round - left.round) / span;
   return left.bankroll + (right.bankroll - left.bankroll) * progress;
+}
+
+function betAtRound(points: BankrollPoint[], round: number): number {
+  let bet = 0;
+  for (const point of points) {
+    if (point.round > round) break;
+    bet = point.bet;
+  }
+  return bet;
 }
 
 function tooltipPosition(hover: HoverPoint): { x: number; y: number } {
@@ -90,6 +101,7 @@ export function BankrollChart({ result }: BankrollChartProps) {
     y: yFor(point.bankroll),
     round: point.round,
     bankroll: point.bankroll,
+    bet: point.bet,
   }));
   const path = points
     .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`)
@@ -135,6 +147,7 @@ export function BankrollChart({ result }: BankrollChartProps) {
       chartHeight: rect.height,
       round: Math.round(round),
       bankroll,
+      bet: betAtRound(points, round),
     });
   };
 
@@ -217,6 +230,9 @@ export function BankrollChart({ result }: BankrollChartProps) {
               </text>
               <text className="bankroll-tooltip-value" x="12" y="43">
                 {formatDollars(Math.round(hover.bankroll))}
+              </text>
+              <text className="bankroll-tooltip-bet" x="12" y="65">
+                BET {hover.bet > 0 ? formatDollars(hover.bet) : "—"}
               </text>
             </g>
           </svg>

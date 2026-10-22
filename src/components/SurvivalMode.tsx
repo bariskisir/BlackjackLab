@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSurvivalRunner } from "../hooks/useSurvivalRunner";
 import { getRuleChips } from "../simulation/rules";
-import type { SavedStrategy, SurvivalResult } from "../simulation/types";
+import type { BettingSystem, SavedStrategy, SurvivalResult } from "../simulation/types";
 import { formatDollars, formatNumber, formatPercent } from "../lib/presentation";
 import { formatStrategyLabel } from "../lib/savedStrategies";
 import { BankrollChart } from "./BankrollChart";
@@ -105,6 +105,7 @@ export function SurvivalMode({
   const { result, error, isRunning, run, cancel } = useSurvivalRunner();
   const [bankrollInput, setBankrollInput] = useState(DEFAULT_STARTING_BANKROLL);
   const [baseBetInput, setBaseBetInput] = useState(DEFAULT_BASE_BET);
+  const [bettingSystem, setBettingSystem] = useState<BettingSystem>("normal");
   const [inputError, setInputError] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -170,7 +171,7 @@ export function SurvivalMode({
     }
 
     setInputError(null);
-    run(selected, startingBankroll, baseBet);
+    run(selected, startingBankroll, baseBet, bettingSystem);
   };
 
   const handleBankrollChange = (value: string) => {
@@ -180,6 +181,11 @@ export function SurvivalMode({
 
   const handleBaseBetChange = (value: string) => {
     setBaseBetInput(sanitizeAmount(value));
+    setInputError(null);
+  };
+
+  const handleBettingSystemChange = (value: string) => {
+    setBettingSystem(value === "martingale" ? "martingale" : "normal");
     setInputError(null);
   };
 
@@ -310,6 +316,31 @@ export function SurvivalMode({
             <span>USD</span>
           </div>
 
+          <label className="survival-money-label" htmlFor="betting-system">
+            Betting system
+          </label>
+          <div className="survival-select">
+            <select
+              id="betting-system"
+              value={bettingSystem}
+              onChange={(event) => handleBettingSystemChange(event.target.value)}
+              disabled={isRunning}
+            >
+              <option value="normal">Normal</option>
+              <option value="martingale">Martingale</option>
+            </select>
+            <span className="survival-select-arrow" aria-hidden="true">
+              ▾
+            </span>
+          </div>
+          {bettingSystem === "martingale" && (
+            <p className="survival-hint">
+              Martingale: the bet doubles after each loss (1× → 2× → 4× → 8×…) and
+              resets on a win; a push repeats the bet. If the bankroll cannot cover
+              the next stake, the whole balance is wagered.
+            </p>
+          )}
+
           <button
             className={`survival-run-button${isRunning ? " is-running" : ""}`}
             type="button"
@@ -328,7 +359,7 @@ export function SurvivalMode({
             <div className="survival-empty" role="status">
               <span className="survival-loader" aria-hidden="true" />
               <strong>Playing the table</strong>
-              <p>Testing the selected chart until the bankroll can no longer cover the base bet.</p>
+              <p>Testing the selected chart until the bankroll can no longer cover the next bet.</p>
             </div>
           ) : result ? (
             <SurvivalResultView result={result} />
