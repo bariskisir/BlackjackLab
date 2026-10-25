@@ -9,6 +9,7 @@ import { useGameRules } from "./hooks/useGameRules";
 import { useSavedStrategies } from "./hooks/useSavedStrategies";
 import { useSimulationRunner } from "./hooks/useSimulationRunner";
 import { strategyIdFor } from "./lib/savedStrategies";
+import { trackAppStartup } from "./telemetry";
 import "./App.scss";
 
 export default function App() {
@@ -24,6 +25,10 @@ export default function App() {
     strategies.find((strategy) => strategy.id === selectedStrategyId) ?? null;
   const previewStrategy =
     selectedStrategy && selectedStrategy.id !== currentStrategyId ? selectedStrategy : null;
+
+  useEffect(() => {
+    void trackAppStartup();
+  }, []);
 
   useEffect(() => {
     if (!result || result.totals.rounds === 0) return;
