@@ -266,7 +266,7 @@ function drawFooter(context: CanvasRenderingContext2D, footerTop: number, height
   context.fillStyle = "#8a8d7b";
   context.font = '400 16px "DM Mono", monospace';
   context.textAlign = "right";
-  context.fillText("Generated at blackjack-lab-ruddy.vercel.app", WIDTH - MARGIN, y - 6);
+  context.fillText("Generated at blackjacklab.bariskisir.com", WIDTH - MARGIN, y - 6);
   context.fillStyle = "#9a9c8a";
   context.font = '400 14px "DM Mono", monospace';
   context.fillText("No data cells are intentionally blank", WIDTH - MARGIN, y + 16);

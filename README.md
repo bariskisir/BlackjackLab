@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://blackjack-lab-ruddy.vercel.app/"><strong>blackjack-lab-ruddy.vercel.app</strong></a>
+  <a href="https://blackjacklab.bariskisir.com/"><strong>blackjacklab.bariskisir.com</strong></a>
 </p>
 
 <p align="center">
